@@ -1,6 +1,6 @@
 # GSL LBFGS-2 Interaction with a Simple Maxent Model
 
-This repository documents a bug with (a portion of) GSL's multimin library: specifically, lbfgs2 does not properly optimize a convex function, even though it returns successfully (GSL_SUCCESS). 
+This repository documents an issue with (a portion of) GSL's multimin library: specifically, lbfgs2 does not properly optimize a convex function, even though it returns successfully (GSL_SUCCESS). 
 The convex function is the (negative) log-likelihood of a maximum entropy model on a simple test case.
 
 This has been tested with GSL 1.16.

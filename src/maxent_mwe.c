@@ -26,7 +26,7 @@ double neg_ll_eval(const gsl_vector* log_weights, void *fparams) {
     ll += ((double)closure->counts[i]) * (gsl_vector_get(log_weights,i) - log_partition);
   }
 #ifdef VERBOSE
-  printf("    p = (%f, %f) ==eval==> %f\n",
+  printf("    p = (%.10f, %.10f) ==eval==> %f\n",
 	 gsl_vector_get(log_weights, 0),
 	 gsl_vector_get(log_weights, 1),
 	 -ll);
@@ -42,14 +42,17 @@ void neg_ll_grad(const gsl_vector* log_weights, void *fparams, gsl_vector* gsl_g
     double prob = gsl_sf_exp(gsl_vector_get(log_weights, i)) / partition;
     double val = closure->counts[i] - N*prob;
     gsl_vector_set(gsl_grad, i, -val);
+  }
 #ifdef VERBOSE
-    printf("    grad|_(%f, %f) ==grad==> (%f, %f)\n",
+  for(size_t i = 0; i < data_size; ++i) {
+    double prob = gsl_sf_exp(gsl_vector_get(log_weights, i)) / partition;
+    printf("    grad|_(%.10f, %.10f) ==grad==> (%f, %f)\n",
 	   gsl_vector_get(log_weights,0),
 	   gsl_vector_get(log_weights,1),
 	   gsl_vector_get(gsl_grad,0),
 	   gsl_vector_get(gsl_grad,1));
+}
 #endif
-  }
 }
 void neg_ll_eg(const gsl_vector* trial_weights, void *fparams,
 	       double* f, gsl_vector* grad) {

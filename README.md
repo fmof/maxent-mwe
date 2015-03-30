@@ -52,7 +52,9 @@ The gradient `G(θ)` of `L` follows the "observed minus expected" formulation of
 
 ```
 G(θ) = < -c(0) + 3 * p(0 | θ),
-         -c(1) + 3 * p(1 | θ) >.
+         -c(1) + 3 * p(1 | θ) >
+     = < -2 + 3 * p(0 | θ),
+         -1 + 3 * p(1 | θ) >.
 ```
 
 These functions are implemented in `src/maxent_mwe.c#neg_ll_eval` (`L(θ)`) and `src/maxent_mwe.c#neg_ll_grad` (`G(θ)`).
@@ -83,7 +85,9 @@ $ ./maxent_mwe
 This indicates an error with the optimization function. 
 
 By compiling with verbosity on (`CFLAGS+=-DVERBOSE`), you can see intermediate function and gradient evaluations. 
-This suggests an issue with the line search.
+Specifically, intermediate `θ` values are tried that minimize the objective. 
+This suggests an issue with the line search. 
+Nevertheless, a poorly terminating line search (and its containing caller) should not return a "success."
 
 ```
     p = (0.0000000000, 0.0000000000) ==eval==> 2.079442
@@ -92,5 +96,11 @@ This suggests an issue with the line search.
     p = (0.0070710678, -0.0070710678) ==eval==> 2.072445
     grad|_(0.0070710678, -0.0070710678) ==grad==> (-0.489394, 0.489394)
     grad|_(0.0070710678, -0.0070710678) ==grad==> (-0.489394, 0.489394)
+    p = (0.0707106781, -0.0707106781) ==eval==> 2.016225
+    grad|_(0.0707106781, -0.0707106781) ==grad==> (-0.394110, 0.394110)
+    grad|_(0.0707106781, -0.0707106781) ==grad==> (-0.394110, 0.394110)
+    p = (0.3373587446, -0.3373587446) ==eval==> 1.909656
+    grad|_(0.3373587446, -0.3373587446) ==grad==> (-0.012324, 0.012324)
+    grad|_(0.3373587446, -0.3373587446) ==grad==> (-0.012324, 0.012324)
     ...
 ```

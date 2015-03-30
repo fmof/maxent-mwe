@@ -1,0 +1,7 @@
+*.o
+*.d
+.GSL_INSTALLED
+gsl-*/
+gsl_*/
+gsl-*.tar.gz
+*~

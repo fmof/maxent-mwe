@@ -7,11 +7,15 @@ GSL_TGZ := gsl-$(GSL_VERSION).tar.gz
 $(GSL_TGZ):
 	wget "http://gnu.mirrorcatalogs.com/gsl/$@" -O $@
 
-.GSL_INSTALLED: $(GSL_TGZ)
+GSL_STATIC_LIBS = $(GSL_INSTALL_DIR)/lib/libgsl.a $(GSL_INSTALL_DIR)/lib/libgslcblas.a 
+
+$(GSL_STATIC_LIBS): $(GSL_TGZ)
 	tar xzf "$<"
 	mkdir -p $(GSL_INSTALL_DIR)
 	cd gsl-$(GSL_VERSION) && ./configure --prefix=$(GSL_INSTALL_DIR) && make && make install
 	touch "$@"
+
+.GSL_INSTALLED: $(GSL_STATIC_LIBS)
 
 all: .GSL_INSTALLED maxent_mwe
 
@@ -22,12 +26,13 @@ STANDARD = -std=c99
 CFLAGS := -O2 -g
 $(BUILD_WHERE)/%.o: src/%.c
 	@if [ ! -d $(BUILD_WHERE) ]; then mkdir -p $(BUILD_WHERE); fi
-	$(CC) $(STANDARD) $(CFLAGS) -L$(GSL_INSTALL_DIR)/lib -I$(GSL_INSTALL_DIR)/include -o $@ -c $<
+	$(CC) $(STANDARD) $(CFLAGS) -I$(GSL_INSTALL_DIR)/include -o $@ -c $<
 
-LIBS = -lgsl -lgslcblas -lm 
+#LIBS = -lgsl -lgslcblas -lm 
+LIBS = $(GSL_STATIC_LIBS) -lm 
 
 maxent_mwe: .GSL_INSTALLED $(C_OBJ_)
-	$(CC) $(STANDARD) $(CFLAGS) -L$(GSL_INSTALL_DIR)/lib -o $@ $(C_OBJ_) $(LIBS)
+	$(CC) $(STANDARD) $(CFLAGS) -o $@ $(C_OBJ_) $(LIBS)
 
 .PHONY: clean
 clean:

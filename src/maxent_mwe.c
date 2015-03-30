@@ -113,13 +113,21 @@ int main() {
   } while (status == GSL_CONTINUE && iter < 100);
 
   printf("(%s) LBFGS2 optimization status = %d, should be %d\n", is_good[status == GSL_SUCCESS], status, GSL_SUCCESS);
-  double expected_point[] = {0.3469, -0.3469};
+  double expected_point[] = {0.346574, -0.346574};
   double eps = 1E-6;
+  int good = 1;
   for(int i = 0; i < arity; ++i) {
+    int within = fabs(gsl_vector_get(point, i) - expected_point[i]) < eps;
+    good &= within;
     printf("(%s) point[0] = %.6f, should be %.6f (tolerance = %e)\n", 
-	   is_good[fabs(gsl_vector_get(point, i) - expected_point[i]) < eps], 
+	   is_good[within], 
 	   gsl_vector_get(point, i),
 	   expected_point[i], eps);
+  }
+  if(good) {
+    printf("(%s) Ending status agrees with optimization result\n", is_good[good]);
+  } else {
+    printf("(%s) Ending status does not agree with optimization result\n", is_good[good]);
   }
 
   free(my_func);
@@ -127,5 +135,5 @@ int main() {
   free(closure);
   gsl_multimin_fdfminimizer_free(minimizer);
   gsl_vector_free(point);
-  return 0;
+  return !good;
 }

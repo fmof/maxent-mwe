@@ -6,7 +6,15 @@ The convex function is the (negative) log-likelihood of a maximum entropy model 
 This has been tested with GSL 1.16.
 
 ## How-to
-## Dependencies
+
+### Getting the code
+
+```
+$ git clone https://github.com/fmof/maxent-mwe
+$ cd maxent-mwe
+```
+
+### Dependencies
 
 * An active internet connection (to download the correct version of GSL).
 * None, except for the standard math library.

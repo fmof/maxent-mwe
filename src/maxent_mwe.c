@@ -103,6 +103,41 @@ int main() {
 
   char *is_good[] = {"BAD", "GOOD"};
 
+  // set a double-comparison tolerance
+  double eps = 1E-6;
+
+  // First verify that the eval + gradient are correct
+  {
+    gsl_vector *point0 = get_optimization_initial_point(arity);
+    gsl_vector_set(point0, 0, 3.2);
+    gsl_vector_set(point0, 1, -2.0);
+    const double ll = my_func->f(point0, (void*)closure);
+    const double Z = gsl_sf_exp(gsl_vector_get(point0, 0)) + gsl_sf_exp(gsl_vector_get(point0, 1));
+    const double compZ = compute_partition(point0);
+    printf("(%s) Z(%f, %f) = %f, should be %f (tolerance %e)\n", 
+	   is_good[fabs(Z - compZ) < eps], 
+	   gsl_vector_get(point0, 0), gsl_vector_get(point0, 1),
+	   compZ, Z, eps);    
+    const double e_ll = -2.0 * gsl_sf_log(gsl_sf_exp(gsl_vector_get(point0, 0)) / Z) - gsl_sf_log(gsl_sf_exp(gsl_vector_get(point0, 1))/Z);
+    printf("(%s) nLL(%f, %f) = %f, should be %f (tolerance %e)\n", 
+	   is_good[fabs(ll - e_ll) < eps], 
+	   gsl_vector_get(point0, 0), gsl_vector_get(point0, 1),
+	   e_ll, ll, eps);
+    gsl_vector *grad = gsl_vector_alloc(arity);
+    my_func->df(point0, (void*)closure, grad);
+    double g0 = -2.0 + 3.0 * gsl_sf_exp(gsl_vector_get(point0, 0))/Z;
+    double g1 = -1.0 + 3.0 * gsl_sf_exp(gsl_vector_get(point0, 1))/Z;
+    int g0_good = fabs(g0 - gsl_vector_get(grad, 0)) < eps;
+    int g1_good = fabs(g1 - gsl_vector_get(grad, 1)) < eps;
+    printf("(%s) nGrad(%f, %f) = (%f, %f), should be (%f, %f) (tolerance %e)\n", 
+	   is_good[g0_good && g1_good], 
+	   gsl_vector_get(point0, 0), gsl_vector_get(point0, 1),
+	   gsl_vector_get(grad, 0), gsl_vector_get(grad, 1),
+	   g0, g1, eps);
+    gsl_vector_free(grad);
+    gsl_vector_free(point0);
+  }  
+
   const gsl_multimin_fdfminimizer_type *T = gsl_multimin_fdfminimizer_vector_bfgs2;
   gsl_multimin_fdfminimizer *minimizer = gsl_multimin_fdfminimizer_alloc (T, arity);
   gsl_multimin_fdfminimizer_set(minimizer, my_func, point, 0.01, 1e-4);
@@ -117,13 +152,12 @@ int main() {
 
   printf("(%s) LBFGS2 optimization status = %d, should be %d\n", is_good[status == GSL_SUCCESS], status, GSL_SUCCESS);
   double expected_point[] = {0.346574, -0.346574};
-  double eps = 1E-6;
   int good = 1;
   for(int i = 0; i < arity; ++i) {
     int within = fabs(gsl_vector_get(point, i) - expected_point[i]) < eps;
     good &= within;
-    printf("(%s) point[0] = %.6f, should be %.6f (tolerance = %e)\n", 
-	   is_good[within], 
+    printf("(%s) point[%d] = %.6f, should be %.6f (tolerance = %e)\n", 
+	   is_good[within], i,
 	   gsl_vector_get(point, i),
 	   expected_point[i], eps);
   }

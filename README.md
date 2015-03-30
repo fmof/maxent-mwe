@@ -62,10 +62,14 @@ These functions are implemented in `src/maxent_mwe.c#neg_ll_eval` (`L(θ)`) and 
 ## Output: Actual vs. Expected
 
 The program should properly fit a model to the provided data (described above). 
+The first three lines output demonstrate some tests for computing the partition function, the objective and the gradient. 
 The output **should** be:
 
 ```
 $ ./maxent_mwe 
+(GOOD) Z(3.200000, -2.000000) = 24.667865, should be 24.667865 (tolerance 1.000000e-06)
+(GOOD) nLL(3.200000, -2.000000) = 5.216504, should be 5.216504 (tolerance 1.000000e-06)
+(GOOD) nGrad(3.200000, -2.000000) = (0.983541, -0.983541), should be (0.983541, -0.983541) (tolerance 1.000000e-06)
 (GOOD) LBFGS2 optimization status = 0, should be 0
 (GOOD) point[0] = 0.346574, should be 0.346574 (tolerance = 1.000000e-06)
 (GOOD) point[0] = -0.346574, should be -0.346574 (tolerance = 1.000000e-06)
@@ -76,6 +80,9 @@ However, it is actually
 
 ```
 $ ./maxent_mwe 
+(GOOD) Z(3.200000, -2.000000) = 24.667865, should be 24.667865 (tolerance 1.000000e-06)
+(GOOD) nLL(3.200000, -2.000000) = 5.216504, should be 5.216504 (tolerance 1.000000e-06)
+(GOOD) nGrad(3.200000, -2.000000) = (0.983541, -0.983541), should be (0.983541, -0.983541) (tolerance 1.000000e-06)
 (GOOD) LBFGS2 optimization status = 0, should be 0
 (BAD) point[0] = 0.000000, should be 0.346574 (tolerance = 1.000000e-06)
 (BAD) point[0] = 0.000000, should be -0.346574 (tolerance = 1.000000e-06)

@@ -4,13 +4,14 @@ help:
 GSL_VERSION := 1.16
 GSL_INSTALL_DIR := $(shell pwd)/gsl_$(GSL_VERSION)_build
 GSL_TGZ := gsl-$(GSL_VERSION).tar.gz
+GSL_TGZ_PATH := "http://gnu.mirrorcatalogs.com/gsl/$(GSL_TGZ)"
 $(GSL_TGZ):
-	wget "http://gnu.mirrorcatalogs.com/gsl/$@" -O $@
+	@if [ ! -e $(@) ]; then wget $(GSL_TGZ_PATH) -O $@; else cp -p $(GSL_TGZ_PATH) $(GSL_TGZ); fi
 
 GSL_STATIC_LIBS = $(GSL_INSTALL_DIR)/lib/libgsl.a $(GSL_INSTALL_DIR)/lib/libgslcblas.a 
 
 $(GSL_STATIC_LIBS): $(GSL_TGZ)
-	tar xzf "$<"
+	tar xzf $<
 	mkdir -p $(GSL_INSTALL_DIR)
 	cd gsl-$(GSL_VERSION) && ./configure --prefix=$(GSL_INSTALL_DIR) && make && make install
 	touch "$@"
@@ -41,5 +42,5 @@ clean:
 
 .PHONY: gsl-clean
 gsl-clean:
-	rm -rf .GSL_INSTALLED $(GSL_INSTALL_DIR) $(GSL_TGZ)
+	rm -rf .GSL_INSTALLED $(GSL_INSTALL_DIR) $(GSL_TGZ) gsl-$(GSL_VERSION)
 

@@ -1,9 +1,11 @@
 # GSL LBFGS-2 Interaction with a Simple Maxent Model
 
-This repository documents a bug with (a portion of) GSL's multimin library: specifically, lbfgs2 does not properly optimize a convex function, even though it returns successfully (GSL_SUCCESS).
+This repository documents a bug with (a portion of) GSL's multimin library: specifically, lbfgs2 does not properly optimize a convex function, even though it returns successfully (GSL_SUCCESS). 
+The convex function is the (negative) log-likelihood of a maximum entropy model on a simple test case.
 
 This has been tested with GSL 1.16.
 
+## How-to
 ## Dependencies
 
 * An active internet connection (to download the correct version of GSL).
@@ -13,14 +15,12 @@ This has been tested with GSL 1.16.
 GSL (version 1.16) is pulled down and installed locally to a subdirectory of this repository. 
 All GSL linking is done statically.
 
-## How-to
-
 ### Compile:
 
-#### `make all`
+* `make all`
 This will:
-* Perform a local install to `$(pwd)/gsl_1.16_build`.
-* Build the executable with `maxent_mwe` with `-std=c99 -O2 -g`.
+  * Perform a local install to `$(pwd)/gsl_1.16_build`.
+  * Build the executable with `maxent_mwe` with `-std=c99 -O2 -g`.
 
 #### Changing options
 * Turn on verbose output by adding `-DVERBOSE` to `CFLAGS`.
@@ -36,7 +36,7 @@ p(x) = 1/Z * exp(θ \cdot f(x))
 where `Z` is the partition function, `sum_{y \in S} exp(θ \cdot f(y))`.
 
 This program sets `S = {0, 1}` and defines two binary features `f_0(x)` and `f_1(x)`, by `f_i(x) = (i == x)`. 
-Therefore, `p(x) = 1/Z * exp(θ_x)`, and `Z = exp(θ_0 + θ_1)`.
+Therefore, `p(x) = 1/Z * exp(θ_x)`, and `Z = exp(θ_0) + exp(θ_1)`.
 
 The program observes a simple dataset, where "0" appears twice and "1" appears once. 
 It fits \hat{θ} to these data (maximum likelihood estimation) via the [GSL BFGS-2](https://www.gnu.org/software/gsl/manual/html_node/Multimin-Algorithms-with-Derivatives.html) optimization method. 
